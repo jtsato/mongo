@@ -1,0 +1,25 @@
+# OS Files
+*.DS_Store
+
+# IntelliJ Files
+.idea
+*.iml
+
+# Eclipse files
+**/.settings
+**\.settings
+*.classpath
+*.project
+*/.gitignore
+*\.gitignore
+.tern-project
+.metadata
+Servers
+
+# JRebel
+rebel.xml
+
+# Maven
+**/target
+**\target
+**/release.properties
