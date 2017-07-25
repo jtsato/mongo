@@ -1,0 +1,24 @@
+http://jtsato-ws.azurewebsites.net/
+
+// encode data on your side using BASE64
+byte[]   bytesEncoded = Base64.encodeBase64(str .getBytes());
+System.out.println("ecncoded value is " + new String(bytesEncoded ));
+
+// Decode data on other side, by processing encoded data
+byte[] valueDecoded= Base64.decodeBase64(bytesEncoded );
+System.out.println("Decoded value is " + new String(valueDecoded));
+
+http://www.journaldev.com/4011/mongodb-java-servlet-web-application-example-tutorial
+http://projects.spring.io/spring-roo/#quick-start
+http://webdevacademy.com.br/tutoriais/crud-com-bootstrap-3-parte1/
+http://www.baeldung.com/spring-mvc-with-velocity
+http://www.json-generator.com/#
+http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/basic_app_embedded_tomcat/basic_app-tomcat-embedded.html
+https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CoreData/ChangeManagement.html#//apple_ref/doc/uid/TP40001075-CH22-SW1
+https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+https://github.com/mongodb/morphia/blob/master/morphia/src/main/java/org/mongodb/morphia/dao/BasicDAO.java
+https://stackoverflow.com/questions/3888575/single-dao-generic-crud-methods-jpa-hibernate-spring
+https://stormpath.com/blog/crud-application-react-spring-boot-user-authentication
+https://www.freeformatter.com/base64-encoder.html#ad-output
+https://www.ibm.com/developerworks/java/library/j-genericdao/index.html
+https://www.mongodb.com/blog/post/joins-and-other-aggregation-enhancements-coming-in-mongodb-3-2-part-1-of-3-introduction
