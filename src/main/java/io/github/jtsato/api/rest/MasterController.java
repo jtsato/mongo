@@ -21,13 +21,18 @@ import io.github.jtsato.dto.Request;
 @RestController
 public class MasterController {
 
+	private static final String DB_CONNECTION_MONGODB_CLOUD = "mongodb://master:masterkey@ds028310.mlab.com:28310/poc";
+	private static final String DB_CONNECTION_MONGODB_LOCAL = "mongodb://admin:admin@localhost:27017/poc";
+
 	private static final Logger logger = LoggerFactory.getLogger(MasterController.class);
+
 	private MongoClientURI mongoClientURI;
 	private MongoClient mongoClient;
 	private MongoDatabase mongoDatabase;
 
 	@RequestMapping("/create")
 	public String create(
+
 			@RequestParam("input") final String applicationId,
 			@RequestParam("clientId") final String clientId,
 			@RequestParam("locale") final String locale,
@@ -40,16 +45,17 @@ public class MasterController {
 
 		try {
 
-			final Document mongoDocument = Document.parse(document);
-			this.mongoClientURI = new MongoClientURI("mongodb://master:masterkey@ds028310.mlab.com:28310/poc");
+			this.mongoClientURI = new MongoClientURI(DB_CONNECTION_MONGODB_LOCAL);
 			this.mongoClient = new MongoClient(this.mongoClientURI);
 			this.mongoDatabase = this.mongoClient.getDatabase(this.mongoClientURI.getDatabase());
+
+			final Document mongoDocument = Document.parse(document);
 			final MongoCollection<Document> mongoCollection = this.mongoDatabase.getCollection(collection);
 			mongoCollection.insertOne(mongoDocument);
 
 		} catch (final Exception exception) {
 			logger.error("/create ", exception);
-			return "Error";
+			return "ERROR";
 
 		} finally {
 			if (this.mongoClient != null) {
@@ -60,27 +66,52 @@ public class MasterController {
 		return "OK";
 	}
 
-	@RequestMapping
-	public String hello() {
-		
+	@RequestMapping("/local")
+	public String local() {
+
 		try {
 
-			this.mongoClientURI = new MongoClientURI("mongodb://master:masterkey@ds028310.mlab.com:28310/poc");
+			this.mongoClientURI = new MongoClientURI(DB_CONNECTION_MONGODB_LOCAL);
 			this.mongoClient = new MongoClient(this.mongoClientURI);
 			this.mongoDatabase = this.mongoClient.getDatabase(this.mongoClientURI.getDatabase());
-			final MongoCollection<Document> mongoCollection = this.mongoDatabase.getCollection("songs");
+
 			final Document mongoDocument = Document.parse("{'decade':'2000s', 'artist': 'Metallica', 'song': 'Enter Sandman', weeksAtOne : 99 }");
-			mongoCollection.insertOne(mongoDocument);
+			this.mongoDatabase.getCollection("songs").insertOne(mongoDocument);
 
 		} catch (final Exception exception) {
-			logger.error("/create ", exception);
-			return "Error";
+			logger.error("/local ", exception);
+			return "ERROR";
 
 		} finally {
 			if (this.mongoClient != null) {
 				this.mongoClient.close();
 			}
 		}
-		return "Hello";
+		return "OK";
+	}
+
+
+	@RequestMapping
+	public String test() {
+
+		try {
+
+			this.mongoClientURI = new MongoClientURI(DB_CONNECTION_MONGODB_CLOUD);
+			this.mongoClient = new MongoClient(this.mongoClientURI);
+			this.mongoDatabase = this.mongoClient.getDatabase(this.mongoClientURI.getDatabase());
+
+			final Document mongoDocument = Document.parse("{'decade':'2000s', 'artist': 'Metallica', 'song': 'Enter Sandman', weeksAtOne : 99 }");
+			this.mongoDatabase.getCollection("songs").insertOne(mongoDocument);
+
+		} catch (final Exception exception) {
+			logger.error("/test ", exception);
+			return "ERROR";
+
+		} finally {
+			if (this.mongoClient != null) {
+				this.mongoClient.close();
+			}
+		}
+		return "OK";
 	}
 }
