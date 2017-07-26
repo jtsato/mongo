@@ -1,11 +1,16 @@
 package io.github.jtsato.dao;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import java.util.ArrayList;
+
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.bson.Document;
+
+import com.mongodb.Block;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 /**
  * Created by JT88CA on 25/07/2017.
@@ -17,25 +22,56 @@ public class MasterDAO {
 
     public MasterDAO(MongoClientURI mongoClientURI, MongoClient mongoClient) throws Exception {
         this.mongoClient = mongoClient;
-        this.mongoDatabase = mongoClient.getDatabase(mongoClientURI.getDatabase());
+        this.mongoDatabase = this.mongoClient.getDatabase(mongoClientURI.getDatabase());
     }
 
-    public Document create(String collection, String jsonDocument) throws Exception {
-        final String documentAsString = Base64.isBase64(jsonDocument) ? new String(Base64.decodeBase64(jsonDocument)) : jsonDocument;
-        final Document document = Document.parse(documentAsString);
+    public Document create(String collection, String document64) throws Exception {
+        final String documentAsString = Base64.isBase64(document64) ? new String(Base64.decodeBase64(document64)) : document64;
+        final Document newDocument = Document.parse(documentAsString);
         final MongoCollection<Document> mongoCollection = this.mongoDatabase.getCollection(collection);
-        mongoCollection.insertOne(document);
-        return document;
+        mongoCollection.insertOne(newDocument);
+        return newDocument;
     }
 
-    public void delete(String collection, String id) throws Exception {
-        byte[] decodeBase64 = Base64.decodeBase64(id);
-        final String documentAsString = new String(decodeBase64);
-        final Document document = Document.parse(documentAsString);
+    public void delete(String collection, String documentKey64) throws Exception {
+        byte[] decodeBase64 = Base64.decodeBase64(documentKey64);
+        final String keyAsString = new String(decodeBase64);
+        final Document deleteDocument = Document.parse(keyAsString);
         final MongoCollection<Document> mongoCollection = this.mongoDatabase.getCollection(collection);
-        mongoCollection.deleteOne(document);
+        mongoCollection.deleteOne(deleteDocument);
     }
 
+    public Document update(String collection, String documentKey64, String document64) throws Exception {
+        final String documentKeyAsString = Base64.isBase64(documentKey64) ? new String(Base64.decodeBase64(documentKey64)) : documentKey64;
+        final String documentAsString = Base64.isBase64(document64) ? new String(Base64.decodeBase64(document64)) : document64;
+        final Document updateDocumentKey = Document.parse(documentKeyAsString);
+        final Document updateDocument = Document.parse(documentAsString);
+        final MongoCollection<Document> mongoCollection = this.mongoDatabase.getCollection(collection);
+        mongoCollection.updateOne(updateDocumentKey, updateDocument);
+        return updateDocument;
+    }
+
+    public ArrayList<Document> read(String collection, String queryDocument64, String orderByDocument64) throws Exception {
+    	
+    	final String queryDocument64AsString = Base64.isBase64(queryDocument64) ? new String(Base64.decodeBase64(queryDocument64)) : queryDocument64;
+    	final String orderDocument64AsString = Base64.isBase64(orderByDocument64) ? new String(Base64.decodeBase64(orderByDocument64)) : orderByDocument64;
+        final Document queryDocument = Document.parse(queryDocument64AsString);
+        final Document orderDocument = Document.parse(orderDocument64AsString);
+        final MongoCollection<Document> mongoCollection = this.mongoDatabase.getCollection(collection);
+        
+        final ArrayList<Document> arrayOfDocuments = new ArrayList<>(0);
+        FindIterable<Document> cursor = mongoCollection.find(queryDocument).sort(orderDocument);
+		
+        cursor.forEach((Block<Document>) document -> {
+        	arrayOfDocuments.add(document);
+        });
+        
+        cursor.iterator().close();
+        
+        return arrayOfDocuments;
+    }
+        
+    
     @Override
     public void finalize(){
         if (this.mongoClient != null){

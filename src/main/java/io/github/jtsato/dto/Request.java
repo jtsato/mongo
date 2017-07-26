@@ -6,64 +6,78 @@ public class Request implements Serializable {
 
 	private static final long serialVersionUID = 4142073284044370603L;
 
+	private String statement;
 	private String applicationId;
 	private String clientId;
-	private String locale;
+	private String language;
 	private String collection;
+	private String documentKey;
 	private String document;
-
-	public Request(final String applicationId, final String clientId, final String locale, final String collection, final String document) {
+	
+	public Request(String statement, String applicationId, String clientId, String language, String collection, String documentKey, String document) {
 		super();
+		this.statement = statement;
 		this.applicationId = applicationId;
 		this.clientId = clientId;
-		this.locale = locale;
+		this.language = language;
 		this.collection = collection;
+		this.documentKey = documentKey;
 		this.document = document;
 	}
 
-	public final String getApplicationId() {
-		return this.applicationId;
+	public String getStatement() {
+		return statement;
 	}
 
-	public final String getClientId() {
-		return this.clientId;
+	public void setStatement(String statement) {
+		this.statement = statement;
 	}
 
-	public final String getCollection() {
-		return this.collection;
+	public String getApplicationId() {
+		return applicationId;
 	}
 
-	public final String getDocument() {
-		return this.document;
-	}
-
-	public final String getLocale() {
-		return this.locale;
-	}
-
-	public final void setApplicationId(final String applicationId) {
+	public void setApplicationId(String applicationId) {
 		this.applicationId = applicationId;
 	}
 
-	public final void setClientId(final String clientId) {
+	public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
 
-	public final void setCollection(final String collection) {
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	public String getCollection() {
+		return collection;
+	}
+
+	public void setCollection(String collection) {
 		this.collection = collection;
 	}
 
-	public final void setDocument(final String document) {
+	public String getDocumentKey() {
+		return documentKey;
+	}
+
+	public void setDocumentKey(String documentKey) {
+		this.documentKey = documentKey;
+	}
+
+	public String getDocument() {
+		return document;
+	}
+
+	public void setDocument(String document) {
 		this.document = document;
-	}
-
-	public final void setLocale(final String locale) {
-		this.locale = locale;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("Request [applicationId=%s, clientId=%s, locale=%s, collection=%s, document=%s]",
-				this.applicationId, this.clientId, this.locale, this.collection, this.document);
 	}
 }

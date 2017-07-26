@@ -44,9 +44,9 @@ public class MasterController {
             @RequestParam("clientId") final String clientId,
             @RequestParam("language") final String language,
             @RequestParam("collection") final String collection,
-            @RequestParam("value") final String document64) {
+            @RequestParam("document") final String document64) {
 
-        final Request request = new Request(applicationId, clientId, language, collection, document64);
+        final Request request = new Request("CREATE", applicationId, clientId, language, collection, StringUtils.EMPTY, document64);
 
         logger.debug(String.format("/CREATE -> REQUEST = %s", request.toString()));
 
@@ -75,16 +75,16 @@ public class MasterController {
             @RequestParam("clientId") final String clientId,
             @RequestParam("language") final String language,
             @RequestParam("collection") final String collection,
-            @RequestParam("id") final String id ) {
+            @RequestParam("documentKey64") final String documentKey64 ) {
 
-        final Request request = new Request(applicationId, clientId, language, collection, id);
+        final Request request = new Request("CREATE", applicationId, clientId, language, collection, documentKey64, StringUtils.EMPTY);
 
         logger.debug(String.format("/DELETE -> REQUEST = %s", request.toString()));
 
         try {
 
             MasterDAO masterDAO = this.getMasterDAO();
-            masterDAO.delete(collection, id);
+            masterDAO.delete(collection, documentKey64);
 
         } catch (final Exception exception) {
             if (exception instanceof MongoWriteException){
@@ -99,6 +99,39 @@ public class MasterController {
 
         return "SUCCESS";
     }
+    
+
+    @RequestMapping("/update")
+    public String update(
+            @RequestParam("applicationId") final String applicationId,
+            @RequestParam("clientId") final String clientId,
+            @RequestParam("language") final String language,
+            @RequestParam("collection") final String collection,
+            @RequestParam("documentKey64") final String documentKey64, 
+        	@RequestParam("document64") final String document64) {
+
+        final Request request = new Request("CREATE", applicationId, clientId, language, collection, documentKey64, document64);
+
+        logger.debug(String.format("/CREATE -> REQUEST = %s", request.toString()));
+
+        try {
+
+            MasterDAO masterDAO = this.getMasterDAO();
+            masterDAO.update(collection, documentKey64, document64); 
+
+        } catch (final Exception exception) {
+            if (exception instanceof MongoWriteException){
+                return "ERROR|" + StringUtils.substringBefore(exception.getMessage(), ":");
+            }
+            logger.error("/CREATE ", exception);
+            return "ERROR";
+
+        } finally {
+
+        }
+
+        return "SUCCESS";
+    }    
 
     @RequestMapping
     public String root() {
