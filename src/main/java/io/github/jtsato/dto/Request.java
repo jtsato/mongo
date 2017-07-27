@@ -9,17 +9,15 @@ public class Request implements Serializable {
 	private String statement;
 	private String applicationId;
 	private String clientId;
-	private String language;
 	private String collection;
 	private String documentKey;
 	private String document;
 	
-	public Request(String statement, String applicationId, String clientId, String language, String collection, String documentKey, String document) {
+	public Request(String statement, String applicationId, String clientId, String collection, String documentKey, String document) {
 		super();
 		this.statement = statement;
 		this.applicationId = applicationId;
 		this.clientId = clientId;
-		this.language = language;
 		this.collection = collection;
 		this.documentKey = documentKey;
 		this.document = document;
@@ -47,14 +45,6 @@ public class Request implements Serializable {
 
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
-	}
-
-	public String getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(String language) {
-		this.language = language;
 	}
 
 	public String getCollection() {

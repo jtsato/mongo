@@ -1,17 +1,22 @@
 package io.github.jtsato.api.rest;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.MongoWriteException;
-import io.github.jtsato.dao.MasterDAO;
-import io.github.jtsato.dto.Request;
+import java.util.ArrayList;
+
 import org.apache.commons.lang.StringUtils;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+
+import io.github.jtsato.dao.MasterDAO;
+import io.github.jtsato.dto.Request;
+import io.github.jtsato.util.MasterUtil;
 
 /**
  * Created by Jorge Takeshi Sato on 20/07/2017.
@@ -42,115 +47,106 @@ public class MasterController {
     public String create(
             @RequestParam("applicationId") final String applicationId,
             @RequestParam("clientId") final String clientId,
-            @RequestParam("language") final String language,
             @RequestParam("collection") final String collection,
-            @RequestParam("document") final String document64) {
+            @RequestParam("document") final String document) {
 
-        final Request request = new Request("CREATE", applicationId, clientId, language, collection, StringUtils.EMPTY, document64);
+        final Request request = new Request("CREATE", applicationId, clientId, collection, StringUtils.EMPTY, document);
 
-        logger.debug(String.format("/CREATE -> REQUEST = %s", request.toString()));
+        logger.debug(String.format("REQUEST = %s", request.toString()));
 
         try {
 
             MasterDAO masterDAO = this.getMasterDAO();
-            masterDAO.create(collection, document64);
+            Document result = masterDAO.create(collection, document);
+        	return MasterUtil.buildSuccessOne(result);
 
         } catch (final Exception exception) {
-            if (exception instanceof MongoWriteException){
-                return "ERROR|" + StringUtils.substringBefore(exception.getMessage(), ":");
-            }
             logger.error("/CREATE ", exception);
-            return "ERROR";
+            return MasterUtil.buildError(exception);
 
         } finally {
 
         }
-
-        return "SUCCESS";
     }
+    
 
     @RequestMapping("/delete")
     public String delete(
             @RequestParam("applicationId") final String applicationId,
             @RequestParam("clientId") final String clientId,
-            @RequestParam("language") final String language,
             @RequestParam("collection") final String collection,
-            @RequestParam("documentKey64") final String documentKey64 ) {
+            @RequestParam("queryDocument") final String queryDocument ) {
 
-        final Request request = new Request("CREATE", applicationId, clientId, language, collection, documentKey64, StringUtils.EMPTY);
+        final Request request = new Request("DELETE", applicationId, clientId, collection, queryDocument, StringUtils.EMPTY);
 
-        logger.debug(String.format("/DELETE -> REQUEST = %s", request.toString()));
+        logger.debug(String.format("REQUEST = %s", request.toString()));
 
         try {
 
             MasterDAO masterDAO = this.getMasterDAO();
-            masterDAO.delete(collection, documentKey64);
+            masterDAO.delete(collection, queryDocument);
+            return MasterUtil.buildSuccess();
 
         } catch (final Exception exception) {
-            if (exception instanceof MongoWriteException){
-                return "ERROR|" + StringUtils.substringBefore(exception.getMessage(), ":");
-            }
-            logger.error("/DELETE ", exception);
-            return "ERROR";
+        	logger.error("/DELETE ", exception);
+            return MasterUtil.buildError(exception);
 
         } finally {
 
         }
-
-        return "SUCCESS";
     }
-    
 
     @RequestMapping("/update")
     public String update(
             @RequestParam("applicationId") final String applicationId,
             @RequestParam("clientId") final String clientId,
-            @RequestParam("language") final String language,
             @RequestParam("collection") final String collection,
-            @RequestParam("documentKey64") final String documentKey64, 
-        	@RequestParam("document64") final String document64) {
+            @RequestParam("queryDocument") final String queryDocument, 
+        	@RequestParam("document") final String document) {
 
-        final Request request = new Request("CREATE", applicationId, clientId, language, collection, documentKey64, document64);
+        final Request request = new Request("UPDATE", applicationId, clientId, collection, queryDocument, document);
 
-        logger.debug(String.format("/CREATE -> REQUEST = %s", request.toString()));
+        logger.debug(String.format("REQUEST = %s", request.toString()));
 
         try {
 
             MasterDAO masterDAO = this.getMasterDAO();
-            masterDAO.update(collection, documentKey64, document64); 
+            Document result = masterDAO.update(collection, queryDocument, document);
+            return MasterUtil.buildSuccessOne(result);
 
         } catch (final Exception exception) {
-            if (exception instanceof MongoWriteException){
-                return "ERROR|" + StringUtils.substringBefore(exception.getMessage(), ":");
-            }
-            logger.error("/CREATE ", exception);
-            return "ERROR";
+            logger.error("/UPDATE ", exception);
+            return MasterUtil.buildError(exception);
 
         } finally {
 
         }
-
-        return "SUCCESS";
-    }    
-
-    @RequestMapping
-    public String root() {
-
-        try {
-
-            final String input = "{ '_id': '597750996d6b6d77ebd41a05', 'index': 0, 'guid': '666493c6-d932-4b31-bd1d-1bd5893366dd', 'isActive': true, 'balance': '$1,658.21', 'picture': 'http://placehold.it/32x32', 'age': 32, 'eyeColor': 'brown', 'name': 'Dixon Allen', 'gender': 'male', 'company': 'EXOSWITCH', 'email': 'dixonallen@exoswitch.com', 'phone': '+1 (887) 595-2640', 'address': '861 Krier Place, Linganore, Rhode Island, 2752', 'about': 'In officia incididunt non ut est proident incididunt ad nostrud velit. Magna eiusmod consequat fugiat nulla esse labore. Sunt exercitation id exercitation excepteur excepteur cupidatat incididunt proident ex fugiat id voluptate commodo id. Aliqua reprehenderit qui nostrud fugiat dolor ipsum aliquip ad exercitation ad officia.\\r\\n', 'registered': '2014-07-31T10:46:39 +03:00', 'latitude': -52.573337, 'longitude': -57.233864, 'tags': [ 'consequat', 'enim', 'Lorem', 'sunt', 'velit', 'non', 'consectetur' ], 'friends': [ { 'id': 0, 'name': 'Landry Leonard' }, { 'id': 1, 'name': 'Ross Hester' }, { 'id': 2, 'name': 'Megan Cummings' } ], 'greeting': 'Hello, Dixon Allen! You have 5 unread messages.', 'favoriteFruit': 'apple' }";
-
-            MasterDAO masterDAO = this.getMasterDAO();
-            masterDAO.create("generator", input);
-
-        } catch (final Exception exception) {
-            logger.error("/ROOT", exception);
-            return "ERROR";
-
-        } finally {
-
-        }
-
-        return "SUCCESS";
     }
+    
+    @RequestMapping("/")
+    public String read(
+            @RequestParam("applicationId") final String applicationId,
+            @RequestParam("clientId") final String clientId,
+            @RequestParam("collection") final String collection,
+            @RequestParam("queryDocument") final String queryDocument, 
+        	@RequestParam("sortFields") final String sortFields) {
+
+        final Request request = new Request("READ", applicationId, clientId, collection, queryDocument, sortFields);
+
+        logger.debug(String.format("REQUEST = %s", request.toString()));
+
+        try {
+
+            MasterDAO masterDAO = this.getMasterDAO();
+            ArrayList<Document> arrayOfDocument = masterDAO.read(collection, queryDocument, sortFields);
+            return MasterUtil.buildSuccessMany(arrayOfDocument);
+
+        } catch (final Exception exception) {
+            logger.error("/READ ", exception);
+            return MasterUtil.buildError(exception);
+
+        } finally {
+
+        }
+    }        
 }
