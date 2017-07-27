@@ -1,6 +1,6 @@
 @echo off
 
-set MONGO_HOME=D:\Develop\40_database\mongodb-win32-x86_64-2008plus-ssl-3.2.14
+set MONGO_HOME=D:\Develop\40_databases\mongodb-win32-x86_64-2008plus-ssl-3.2.14
 
 cls
 
