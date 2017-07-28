@@ -1,6 +1,7 @@
 package io.github.jtsato.api.rest;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.commons.lang.StringUtils;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
@@ -28,9 +30,12 @@ import io.github.jtsato.util.MasterUtil;
 public class MasterController {
 
     private static final Logger logger = LoggerFactory.getLogger(MasterController.class);
-
+    
     @Value("${database.connectionString}")
     public String databaseConnectionString;
+    
+    @Value("${log.request.active}")
+    public String logRequestActive;    
 
     private static HashMap<String, MasterDAO> hashMapMasterDAO = new HashMap<String, MasterDAO>();
 
@@ -44,13 +49,11 @@ public class MasterController {
     	StopWatch stopWatch = new StopWatch();
     	stopWatch.start();
     	
-        final Request request = new Request("CREATE", applicationId, clientId, collection, StringUtils.EMPTY, document);
-
-        logger.debug(String.format("REQUEST = %s", request.toString()));
+        final Request request = new Request("CREATE", applicationId, clientId, collection, new Date(), StringUtils.EMPTY, document);
+        logRequest(request);
 
         try {
-
-            MasterDAO masterDAO = this.getMasterDAO(applicationId);
+            MasterDAO masterDAO = this.getDataAcessObject(applicationId);
             Document result = masterDAO.create(collection, document);
         	return MasterUtil.buildSuccessOne(result);
 
@@ -65,7 +68,7 @@ public class MasterController {
     }
     
 
-    @RequestMapping("/delete")
+	@RequestMapping("/delete")
     public String delete(
             @RequestParam("applicationId") final String applicationId,
             @RequestParam("clientId") final String clientId,
@@ -75,13 +78,11 @@ public class MasterController {
     	StopWatch stopWatch = new StopWatch();
     	stopWatch.start();
 
-        final Request request = new Request("DELETE", applicationId, clientId, collection, queryDocument, StringUtils.EMPTY);
-
-        logger.debug(String.format("REQUEST = %s", request.toString()));
+        final Request request = new Request("DELETE", applicationId, clientId, collection, new Date(), queryDocument, StringUtils.EMPTY);
+        logRequest(request);
 
         try {
-
-            MasterDAO masterDAO = this.getMasterDAO(applicationId);
+            MasterDAO masterDAO = this.getDataAcessObject(applicationId);
             masterDAO.delete(collection, queryDocument);
             return MasterUtil.buildSuccess();
 
@@ -106,13 +107,11 @@ public class MasterController {
     	StopWatch stopWatch = new StopWatch();
     	stopWatch.start();
     	
-        final Request request = new Request("UPDATE", applicationId, clientId, collection, queryDocument, document);
-
-        logger.debug(String.format("REQUEST = %s", request.toString()));
+        final Request request = new Request("UPDATE", applicationId, clientId, collection, new Date(), queryDocument, document);
+        logRequest(request);
 
         try {
-
-            MasterDAO masterDAO = this.getMasterDAO(applicationId);
+            MasterDAO masterDAO = this.getDataAcessObject(applicationId);
             Document result = masterDAO.update(collection, queryDocument, document);
             return MasterUtil.buildSuccessOne(result);
 
@@ -137,13 +136,11 @@ public class MasterController {
     	StopWatch stopWatch = new StopWatch();
     	stopWatch.start();
 
-        final Request request = new Request("READ", applicationId, clientId, collection, queryDocument, sortFields);
-
-        logger.debug(String.format("REQUEST = %s", request.toString()));
+        final Request request = new Request("READ", applicationId, clientId, collection, new Date(), queryDocument, sortFields);
+        logRequest(request);
 
         try {
-
-            MasterDAO masterDAO = this.getMasterDAO(applicationId);
+            MasterDAO masterDAO = this.getDataAcessObject(applicationId);
             ArrayList<Document> arrayOfDocument = masterDAO.read(collection, queryDocument, sortFields);
             return MasterUtil.buildSuccessMany(arrayOfDocument);
 
@@ -157,7 +154,7 @@ public class MasterController {
         }
     }
     
-    private MasterDAO getMasterDAO(String applicationId) throws Exception {
+    private MasterDAO getDataAcessObject(String applicationId) throws Exception {
     	
     	if (StringUtils.isBlank(applicationId)) return null;
 
@@ -171,5 +168,24 @@ public class MasterController {
         }
 
         return dataAccessObject;
-    }    
+    }
+    
+    private void logRequest(Request request) {
+    	
+        logger.debug(String.format("REQUEST = %s", request.toString()));
+        
+        if (!StringUtils.equalsIgnoreCase(logRequestActive, "Yes")) return;
+        if (StringUtils.isBlank(request.getApplicationId())) return;
+        
+        try {
+        	
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonRequest = objectMapper.writeValueAsString(request);
+            MasterDAO masterDAO = this.getDataAcessObject(request.getApplicationId());
+            masterDAO.create("logs", jsonRequest);
+            
+		} catch (Exception exception) {
+	        logger.error(String.format("The request could not be saved in database %s.", databaseConnectionString + request.getApplicationId()));
+		}
+	}
 }

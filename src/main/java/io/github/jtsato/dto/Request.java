@@ -1,6 +1,7 @@
 package io.github.jtsato.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by Jorge Takeshi Sato on 20/07/2017.
@@ -14,15 +15,21 @@ public class Request implements Serializable {
 	private String applicationId;
 	private String clientId;
 	private String collection;
+	private Date timestamp;
 	private String documentKey;
 	private String document;
-	
-	public Request(String statement, String applicationId, String clientId, String collection, String documentKey, String document) {
+
+	private Request() {
 		super();
+	}
+
+	public Request(String statement, String applicationId, String clientId, String collection, Date timestamp, String documentKey, String document) {
+		this();
 		this.statement = statement;
 		this.applicationId = applicationId;
 		this.clientId = clientId;
 		this.collection = collection;
+		this.timestamp = timestamp;
 		this.documentKey = documentKey;
 		this.document = document;
 	}
@@ -57,6 +64,14 @@ public class Request implements Serializable {
 
 	public void setCollection(String collection) {
 		this.collection = collection;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	public String getDocumentKey() {
