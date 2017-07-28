@@ -2,6 +2,10 @@ package io.github.jtsato.dto;
 
 import java.io.Serializable;
 
+/**
+ * Created by Jorge Takeshi Sato on 20/07/2017.
+ */
+
 public class Request implements Serializable {
 
 	private static final long serialVersionUID = 4142073284044370603L;

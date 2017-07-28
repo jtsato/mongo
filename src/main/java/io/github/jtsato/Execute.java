@@ -6,6 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+/**
+ * Created by Jorge Takeshi Sato on 20/07/2017.
+ */
+
 @SpringBootApplication
 @EnableScheduling
 @EnableAutoConfiguration(exclude = { MongoAutoConfiguration.class })
