@@ -25,7 +25,7 @@ db.createUser(
 	{
 	  user: "admin",
 	  pwd: "admin",
-	  roles: [ { role: "readWrite", db:"poc" } ]
+	  roles: [ { role: "readWrite", db:"b2b-offline" } ]
 	}
 )
 

@@ -11,38 +11,38 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-import io.github.jtsato.util.MasterUtil;
+import io.github.jtsato.util.ApiUtil;
 
 /**
  * Created by Jorge Takeshi Sato on 25/07/2017.
  */
 
-public class MasterDAO {
+public class ApiDataAccess {
 
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
 
-    public MasterDAO(MongoClientURI mongoClientURI, MongoClient mongoClient) throws Exception {
+    public ApiDataAccess(MongoClientURI mongoClientURI, MongoClient mongoClient) throws Exception {
         this.mongoClient = mongoClient;
         this.mongoDatabase = this.mongoClient.getDatabase(mongoClientURI.getDatabase());
     }
 
     public Document create(String collection, String document64) throws Exception {
-        final Document newDocument = MasterUtil.convert(document64);
+        final Document newDocument = ApiUtil.convert(document64);
         final MongoCollection<Document> mongoCollection = this.mongoDatabase.getCollection(collection);
         mongoCollection.insertOne(newDocument);
         return newDocument;
     }
 
     public void delete(String collection, String documentKey64) throws Exception {
-        final Document deleteDocument = MasterUtil.convert(documentKey64);
+        final Document deleteDocument = ApiUtil.convert(documentKey64);
         final MongoCollection<Document> mongoCollection = this.mongoDatabase.getCollection(collection);
         mongoCollection.deleteOne(deleteDocument);
     }
 
     public Document update(String collection, String documentKey64, String document64) throws Exception {
-        final Document updateDocumentKey = MasterUtil.convert(documentKey64);
-        final Document updateDocument = MasterUtil.convert(document64);
+        final Document updateDocumentKey = ApiUtil.convert(documentKey64);
+        final Document updateDocument = ApiUtil.convert(document64);
         final MongoCollection<Document> mongoCollection = this.mongoDatabase.getCollection(collection);
         mongoCollection.replaceOne(updateDocumentKey, updateDocument);
         return updateDocument;
@@ -50,8 +50,8 @@ public class MasterDAO {
 
     public ArrayList<Document> read(String collection, String queryDocument64, String orderByDocument64) throws Exception {
     	
-        final Document queryDocument = MasterUtil.convert(queryDocument64);
-        final Document orderDocument = MasterUtil.convert(orderByDocument64);
+        final Document queryDocument = ApiUtil.convert(queryDocument64);
+        final Document orderDocument = ApiUtil.convert(orderByDocument64);
         final MongoCollection<Document> mongoCollection = this.mongoDatabase.getCollection(collection);
         
         final ArrayList<Document> arrayOfDocuments = new ArrayList<>(0);

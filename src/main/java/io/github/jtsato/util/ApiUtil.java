@@ -13,7 +13,7 @@ import com.mongodb.MongoWriteException;
  * Created by Jorge Takeshi Sato on 25/07/2017.
  */
 
-public class MasterUtil {
+public class ApiUtil {
 
 	public static Document convert(String string) {
 		if (StringUtils.isBlank(string)) {
@@ -31,7 +31,7 @@ public class MasterUtil {
 	}
 
 	public static String buildSuccess() {
-		return MasterUtil.buildSuccessOne(null);
+		return ApiUtil.buildSuccessOne(null);
 	}
 
 	public static String buildSuccessMany(Collection<Document> documents) {
