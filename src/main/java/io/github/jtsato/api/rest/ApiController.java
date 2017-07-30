@@ -126,7 +126,7 @@ public class ApiController {
         }
     }
     
-    @RequestMapping("/")
+    @RequestMapping("/read")
     public String read(
             @RequestParam("applicationId") final String applicationId,
             @RequestParam("clientId") final String clientId,
