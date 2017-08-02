@@ -23,7 +23,8 @@ public class Request implements Serializable {
 		super();
 	}
 
-	public Request(String statement, String applicationId, String clientId, String collection, Date timestamp, String documentKey, String document) {
+	public Request(String statement, String applicationId, String clientId, String collection, Date timestamp,
+			String documentKey, String document) {
 		this();
 		this.statement = statement;
 		this.applicationId = applicationId;
@@ -88,5 +89,26 @@ public class Request implements Serializable {
 
 	public void setDocument(String document) {
 		this.document = document;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Request [statement=");
+		builder.append(statement);
+		builder.append(", applicationId=");
+		builder.append(applicationId);
+		builder.append(", clientId=");
+		builder.append(clientId);
+		builder.append(", collection=");
+		builder.append(collection);
+		builder.append(", timestamp=");
+		builder.append(timestamp);
+		builder.append(", documentKey=");
+		builder.append(documentKey);
+		builder.append(", document=");
+		builder.append(document);
+		builder.append("]");
+		return builder.toString();
 	}
 }
